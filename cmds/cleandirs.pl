@@ -9,7 +9,7 @@
 
 :- doc(module,"A simple program for traversing a directory tree
 and deciding which files may be deleted in order to save space and
-not to loose information. 
+not to lose information. 
 
    @section{Usage (cleandirs)}
 
