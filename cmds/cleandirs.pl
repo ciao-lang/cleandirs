@@ -27,6 +27,7 @@ existence of a recursive /bin/rm command in your system.").
 :- use_module(library(iso_char), [
         get_char/1
                                       ]).
+:- use_module(library(lists), [member/2]).
 :- use_module(library(aggregates), [
         setof/3, (^)/2
                                    ]).
@@ -44,6 +45,9 @@ existence of a recursive /bin/rm command in your system.").
         file_exists/1,
         file_property/2
                                ]).
+
+:- use_module(engine(prolog_flags), [prompt/2]).
+
 :- data silent/0.
 
 main(Arg):- 
