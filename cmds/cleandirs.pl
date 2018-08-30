@@ -24,6 +24,7 @@ information on the options.").
 :- doc(bug, "Recursive removal of subdirectories relies on the
 existence of a recursive /bin/rm command in your system.").
 
+:- use_module(engine(data_facts)).
 :- use_module(library(iso_char), [
         get_char/1
                                       ]).
