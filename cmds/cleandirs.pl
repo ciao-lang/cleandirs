@@ -46,7 +46,7 @@ existence of a recursive /bin/rm command in your system.").
         file_property/2
                                ]).
 
-:- use_module(engine(prolog_flags), [prompt/2]).
+:- use_module(engine(runtime_control), [prompt/2]).
 
 :- data silent/0.
 
