@@ -1,6 +1,6 @@
 :- module(cleandirs, [main/1], [assertions, datafacts]).
 
-:- doc(title,"A Program to Help Cleaning your Directories ").
+:- doc(title,"A program to help cleaning your directories").
 :- doc(author,"Manuel Carro").
 
 :- doc(module,"A simple program for traversing a directory tree
