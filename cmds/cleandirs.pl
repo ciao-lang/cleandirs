@@ -388,7 +388,7 @@ generate_file(FileX, FileY):-
         atom_concat(Base, Y, FileY),
         atom_concat(Base, X, FileX).
 
-:- true pred can_generate_file(Generator, Generated) : var * atm => atm * atm.
+:- pred can_generate_file(Generator, Generated) : var * atm => atm * atm.
 
 can_generate_file(X, Y):-
         can_generate(X, Y),
