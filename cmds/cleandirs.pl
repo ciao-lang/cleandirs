@@ -21,89 +21,89 @@ information on the options.").
 existence of a recursive /bin/rm command in your system.").
 
 :- use_module(library(iso_char), [
-        get_char/1
-                                      ]).
+    get_char/1
+                                  ]).
 :- use_module(library(lists), [member/2]).
 :- use_module(library(aggregates), [
-        setof/3, (^)/2
-                                   ]).
+    setof/3, (^)/2
+                               ]).
 :- use_module(library(format), [
-        format/2
-                               ]).
+    format/2
+                           ]).
 :- use_module(library(system), [
-        modif_time/2,
-        datime/9,
-        working_directory/2,
-        system/1,
-        delete_file/1,
-        cd/1,
-        directory_files/2,
-        file_exists/1,
-        file_property/2
-                               ]).
+    modif_time/2,
+    datime/9,
+    working_directory/2,
+    system/1,
+    delete_file/1,
+    cd/1,
+    directory_files/2,
+    file_exists/1,
+    file_property/2
+                           ]).
 
 :- use_module(engine(runtime_control), [prompt/2]).
 
 :- data silent/0.
 
 main(Arg):- 
-        (
-            Arg = [Directory, Action, Backups]
-        ;
-            Arg = ['--silent', Directory, Action, Backups],
-            asserta_fact(silent)
-        ),
-        !,
-        (
-            check_right_use(Directory, Action, Backups)
-        ->
-        directory_files(Directory, Files),
-        cd(Directory),
-        catch(recurse_all_entries(Files, action(Action, Backups)), 
-              Ball, exit(Ball))
-        ;
-            usage_message
-        ).
+    (
+        Arg = [Directory, Action, Backups]
+    ;
+        Arg = ['--silent', Directory, Action, Backups],
+        asserta_fact(silent)
+    ),
+    !,
+    (
+        check_right_use(Directory, Action, Backups)
+    ->
+    directory_files(Directory, Files),
+    cd(Directory),
+    catch(recurse_all_entries(Files, action(Action, Backups)), 
+          Ball, exit(Ball))
+    ;
+        usage_message
+    ).
 
 
 main(_):-
-        format("Wrong number of arguments~n", []),
-        usage_message.
+    format("Wrong number of arguments~n", []),
+    usage_message.
 
 exit(exit):- !,
-        format("~nExiting application after user request~n",[]).
+    format("~nExiting application after user request~n",[]).
 exit(Ball):- !,
-        format("~nExiting application after exception:~n~w",[Ball]).
+    format("~nExiting application after exception:~n~w",[Ball]).
 
 
 check_right_use(Directory, Action, Backups):-
-        second_arg(Second),
-        third_arg(Third),
-        (
-            file_property(Directory, type(directory)) ->
-            true
-        ;
-            format(
-          "first argument (~w) not valid: must be a directory~n", [Directory]),
-          Fail = yes
-        ),
-        (
-            member(Action, Second) ->
-             true
-        ;
-            format(
-          "Second argument not valid: must be one of ~w~n", [Second]),
-          Fail = yes
-        ),
-        (
-            member(Backups, Third) ->
-             true
-        ; 
-            format(
-          "Third argument not valid: must be one of ~w~n", [Third]),
-          Fail = yes
-        ),
-        Fail = no.
+    second_arg(Second),
+    third_arg(Third),
+    (
+        file_property(Directory, type(directory)) ->
+        true
+    ;
+        format(
+      "first argument (~w) not valid: must be a directory~n", [Directory]),
+      Fail = yes
+    ),
+    (
+        member(Action, Second) ->
+         true
+    ;
+        format(
+      "Second argument not valid: must be one of ~w~n", [Second]),
+      Fail = yes
+    ),
+    (
+        member(Backups, Third) ->
+         true
+    ; 
+        format(
+      "Third argument not valid: must be one of ~w~n", [Third]),
+      Fail = yes
+    ),
+    Fail = no.
 
 
 second_arg(['--list','--ask','--delete']).
@@ -119,16 +119,16 @@ based on the extension of the filename.
 
 Delete options is one of:
    --list: just list the files/directories which are amenable to be deleted,
-           but do not delete them. SAFE.
+       but do not delete them. SAFE.
     --ask: list the files/directories and ask for deletion. UNSAFE if you
-           make a mistake.
+       make a mistake.
  --delete: just delete the files/directories without asking.  I envy your
-           brave soul if you choose this option.
+       brave soul if you choose this option.
 
 Backup options is one of:
  --includebackups: include backup files in the list of files to check.
  --excludebackups: do not include backup files in the list of files
-                   to check.
+               to check.
     --onlybackups: include only backup files in the list of files to check.
 
 Symbolic links are not traversed.  Special files are not checked.
@@ -136,203 +136,203 @@ Symbolic links are not traversed.  Special files are not checked.
 ").
 
 usage_message:-
-        usage_text(Usage),
-        format(Usage, []),
-        say_backups,
-        say_generators.
-        
+    usage_text(Usage),
+    format(Usage, []),
+    say_backups,
+    say_generators.
+    
 say_backups:-
-        format("The extensions considered to be backups are:~n", []),
-        oldstuff(Suff),
-        format("   ~w~n", [Suff]),
-        fail.
+    format("The extensions considered to be backups are:~n", []),
+    oldstuff(Suff),
+    format("   ~w~n", [Suff]),
+    fail.
 say_backups.
 
 say_generators:-
-        format("
+    format("
 The following extensions are taken into account when looking for files
 which can be generated from other files:~n", []),
-        setof(X, 
-              Y^((generates(X, Y) ; generates(Y, X)), X \== ''), 
-              ListOfSuff),
-        member(Suf, ListOfSuff),
-        format("   ~w~n", [Suf]),
-        fail.
+    setof(X, 
+          Y^((generates(X, Y) ; generates(Y, X)), X \== ''), 
+          ListOfSuff),
+    member(Suf, ListOfSuff),
+    format("   ~w~n", [Suf]),
+    fail.
 say_generators:-
-        format("
+    format("
 Combinations of these extensions (e.g., .tar.gz) are also sought for~n", []).
 
 
 recurse_all_entries([], _Action).
 recurse_all_entries([File|Files], Action):-
-        check_file_property(File, regular), !,
-        check_what_to_do(File, Action, _Erased),
-        recurse_all_entries(Files, Action).
+    check_file_property(File, regular), !,
+    check_what_to_do(File, Action, _Erased),
+    recurse_all_entries(Files, Action).
 recurse_all_entries([Directory|Files],Action):-
-        check_file_property(Directory, directory), !,
+    check_file_property(Directory, directory), !,
+    ( 
+        Directory \== '..', Directory \== '.' -> 
+        check_what_to_do(Directory, Action, Erased),
         ( 
-            Directory \== '..', Directory \== '.' -> 
-            check_what_to_do(Directory, Action, Erased),
+            Erased = no -> 
+            working_directory(Old, Old),
             ( 
-                Erased = no -> 
-                working_directory(Old, Old),
+                file_property(Directory, linkto(_)) ->
+                (
+                    silent -> 
+                    true
+                ;
+                    format(
+                    "*** Skipping directory '~w/~w' (symbolic link)~n",
+                           [Old,Directory])
+                )
+            ; 
                 ( 
-                    file_property(Directory, linkto(_)) ->
+                    directory_files(Directory, DirFiles),
+                    cd(Directory) -> 
+%                        display(in(Directory)), nl,
+                    recurse_all_entries(DirFiles, Action),
+                    cd(Old)
+                ; 
                     (
-                        silent -> 
+                        silent ->
                         true
                     ;
                         format(
-                        "*** Skipping directory '~w/~w' (symbolic link)~n",
-                               [Old,Directory])
-                    )
-                ; 
-                    ( 
-                        directory_files(Directory, DirFiles),
-                        cd(Directory) -> 
-%                        display(in(Directory)), nl,
-                        recurse_all_entries(DirFiles, Action),
-                        cd(Old)
-                    ; 
-                        (
-                            silent ->
-                            true
-                        ;
-                            format(
-                 "*** Skipping directory '~w/~w' (insuficient permissions)~n",
-		           [Old,Directory])
-                        )
+             "*** Skipping directory '~w/~w' (insuficient permissions)~n",
+                       [Old,Directory])
                     )
                 )
-	    ; 
-                true
             )
         ; 
             true
-        ),
-	recurse_all_entries(Files, Action).
+        )
+    ; 
+        true
+    ),
+    recurse_all_entries(Files, Action).
 recurse_all_entries([_File|Files], Action):-
-        recurse_all_entries(Files, Action).
+    recurse_all_entries(Files, Action).
 
 check_file_property(File, Prop):-
-        file_exists(File) ->
-        file_property(File, type(Prop))
+    file_exists(File) ->
+    file_property(File, type(Prop))
  ;
-        ignore_file(Prop, File).
+    ignore_file(Prop, File).
 
 ignore_file(regular, File):-
-	working_directory(Old, Old),
-        (
-            silent ->
-            true
-        ;
-            format("*** Could not access: '~w/~w'~n",[Old,File])
-        ),
-	fail.
+    working_directory(Old, Old),
+    (
+        silent ->
+        true
+    ;
+        format("*** Could not access: '~w/~w'~n",[Old,File])
+    ),
+    fail.
 
 %% Files with a generator
 check_what_to_do(File, action(AskRemList, CheckBackups), Erased):-
-        CheckBackups \== '--onlybackups',
-        can_generate_file(GeneratorFile, File),
-        file_exists(GeneratorFile), !,
-        decide_action_generator(File, GeneratorFile, AskRemList, Erased).
+    CheckBackups \== '--onlybackups',
+    can_generate_file(GeneratorFile, File),
+    file_exists(GeneratorFile), !,
+    decide_action_generator(File, GeneratorFile, AskRemList, Erased).
 %% Backup files, and we want to check them
 check_what_to_do(File, action(AskRemList, CheckBackups), Erased):-
-        CheckBackups \== '--excludebackups',
-        oldstuff(Suffix),
-        atom_concat(_Basename, Suffix, File), !,
-        decide_action_backup(File, AskRemList, Erased).
+    CheckBackups \== '--excludebackups',
+    oldstuff(Suffix),
+    atom_concat(_Basename, Suffix, File), !,
+    decide_action_backup(File, AskRemList, Erased).
 %% None of the above
 check_what_to_do(_, _, no).
 
 decide_action_generator(File, GeneratorFile, AskRemList, Erased):-
-        last_modif_time(File, TFile, TimeFile),
-        last_modif_time(GeneratorFile, TGen, TimeGenerator),
-        working_directory(Dir, Dir),
-        format("~w: ~n", [Dir]),
-        format("  ~w (~w)~n", [GeneratorFile, TimeGenerator]),
-        format("  ~w (~w)~n", [File, TimeFile]),
+    last_modif_time(File, TFile, TimeFile),
+    last_modif_time(GeneratorFile, TGen, TimeGenerator),
+    working_directory(Dir, Dir),
+    format("~w: ~n", [Dir]),
+    format("  ~w (~w)~n", [GeneratorFile, TimeGenerator]),
+    format("  ~w (~w)~n", [File, TimeFile]),
+    (
+        TGen > TFile ->
         (
-            TGen > TFile ->
-            (
-                silent ->
-                true
-            ;
-                format("(~w has been modified or created after ~w)~n",
-                       [GeneratorFile, File])
-            ),
-            erase_or_not(AskRemList, File, Erased)
+            silent ->
+            true
         ;
-            (
-                silent ->
-                true
-            ;
-                format("(~w has been modified or created after ~w)~n",
-                         [File, GeneratorFile])
-            ),
-            erase_or_not(AskRemList, File, Erased)
-        ).
+            format("(~w has been modified or created after ~w)~n",
+                   [GeneratorFile, File])
+        ),
+        erase_or_not(AskRemList, File, Erased)
+    ;
+        (
+            silent ->
+            true
+        ;
+            format("(~w has been modified or created after ~w)~n",
+                     [File, GeneratorFile])
+        ),
+        erase_or_not(AskRemList, File, Erased)
+    ).
 
 
 decide_action_backup(File, AskRemList, Erased):-
-        working_directory(Dir, Dir),
-        format("File ~w found in ~w~n", [File, Dir]),
-        erase_or_not(AskRemList, File, Erased).
+    working_directory(Dir, Dir),
+    format("File ~w found in ~w~n", [File, Dir]),
+    erase_or_not(AskRemList, File, Erased).
 
 
 %% In case of forced deletion: just 
 
 erase_or_not('--list', _File, no).
 erase_or_not('--ask',  File, Perhaps):-
-        Answers = [y,n,q],
-        format("Do you want to erase ~w ~w?~n", [File, Answers]),
-        prompt(Old, '--> '),
-        get_answer(Answer, Answers),
-        prompt(_New, Old),
+    Answers = [y,n,q],
+    format("Do you want to erase ~w ~w?~n", [File, Answers]),
+    prompt(Old, '--> '),
+    get_answer(Answer, Answers),
+    prompt(_New, Old),
+    (
+        Answer = q ->
+        throw(exit)
+    ;
         (
-            Answer = q ->
-            throw(exit)
+            Answer = y ->
+            erase_it(File),
+            Perhaps = yes
         ;
-            (
-                Answer = y ->
-                erase_it(File),
-                Perhaps = yes
-            ;
-                Perhaps = no
-            )
-        ).
+            Perhaps = no
+        )
+    ).
 erase_or_not('--delete', File, yes):- erase_it(File).
 
 
 erase_it(File):-
+    (
+        file_property(File, type(directory)) ->
+        atom_concat('/bin/rm -rf ', File, Command),
+        system(Command)
+    ;
         (
-            file_property(File, type(directory)) ->
-            atom_concat('/bin/rm -rf ', File, Command),
-            system(Command)
+            delete_file(File) ->
+            true
         ;
-            (
-                delete_file(File) ->
-                true
-            ;
-                format("*** Could not delete ~w (insuficient permissions?)~n", 
-                [File])
-            )
-        ).
+            format("*** Could not delete ~w (insuficient permissions?)~n", 
+            [File])
+        )
+    ).
 
 get_answer(X, ListOfValidAnswers):-
-        get_char(Y),
-        get_char(_),  %%% return
-        (
-            member(Y, ListOfValidAnswers)->
-            X = Y
-        ;
-            format("Please answer one of ~w~n", [ListOfValidAnswers]),
-            get_answer(X, ListOfValidAnswers)
-        ).
+    get_char(Y),
+    get_char(_),  %%% return
+    (
+        member(Y, ListOfValidAnswers)->
+        X = Y
+    ;
+        format("Please answer one of ~w~n", [ListOfValidAnswers]),
+        get_answer(X, ListOfValidAnswers)
+    ).
 
 last_modif_time(File, Time, Year/Month/Day-Hour*Min*Sec):-
-        modif_time(File, Time),
-        datime(Time, Year, Month, Day, Hour, Min, Sec, _, _).
+    modif_time(File, Time),
+    datime(Time, Year, Month, Day, Hour, Min, Sec, _, _).
 
  %% These are ad-hoc suffixes which usually mean we are leaving a trail
  %% of old garbage behind us.  Sometimes we do not want to remove
@@ -384,18 +384,18 @@ generates('.gz', '').
 
 
 generate_file(FileX, FileY):-
-        generates(X, Y),
-        atom_concat(Base, Y, FileY),
-        atom_concat(Base, X, FileX).
+    generates(X, Y),
+    atom_concat(Base, Y, FileY),
+    atom_concat(Base, X, FileX).
 
 :- pred can_generate_file(Generator, Generated) : var * atm => atm * atm.
 
 can_generate_file(X, Y):-
-        can_generate(X, Y),
-        X \== Y.
+    can_generate(X, Y),
+    X \== Y.
 
 can_generate(FileX, FileY):-
-        generate_file(FileX, FileY).
+    generate_file(FileX, FileY).
 can_generate(FileX, FileZ):-
-        generate_file(FileY, FileZ),
-        generate_file(FileX, FileY).
+    generate_file(FileY, FileZ),
+    generate_file(FileX, FileY).
