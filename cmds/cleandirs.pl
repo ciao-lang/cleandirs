@@ -9,10 +9,7 @@ not to lose information.
 
    @section{Usage (cleandirs)}
 
-   @begin{verbatim}
    @includefact{usage_text/1}
-   @end{verbatim}
-
 
  Invoking the program with no arguments will return an up-to-date
 information on the options.").
